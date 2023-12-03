@@ -24,10 +24,10 @@ class Market extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           //Header
-          const Padding(
+           Padding(
             padding: EdgeInsets.only(left: 24.0, right: 24.0, top: 10.0),
             child: Text(
-              'Welcome to Laptop Pick',
+              'Welcome, $username',
               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
           ),
