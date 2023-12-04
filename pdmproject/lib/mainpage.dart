@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pdmproject/cart_page.dart';
 import 'package:pdmproject/intro.dart';
 import 'package:pdmproject/market.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key, required this.username}); //Constructor
@@ -45,35 +46,23 @@ class _MainPageState extends State<MainPage> {
             MaterialButton(
                 onPressed: () async {
                   // confirmation dialog
-                  bool logoutConfirmed = await showDialog(
+                  AwesomeDialog(
                     context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Confirmation'),
-                      content: Text('Do you want to logout?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(false);
-                          },
-                          child: Text('No'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(true);
-                          },
-                          child: Text('Yes'),
-                        ),
-                      ],
-                    ),
-                  );
-
-                  if (logoutConfirmed == true) {
-                    // After successful logout, the user will be going to the login page
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => IntroScreen()),
-                    );
-                  }
-                 },
+                    dialogType: DialogType.WARNING,
+                    animType: AnimType.BOTTOMSLIDE,
+                    title: 'Confirmation',
+                    desc: 'Do you want to logout?',
+                    btnCancelOnPress: () {},
+                    btnCancelText: "No, take me back",
+                    btnOkOnPress: () {
+                      // After successful logout, the user will be going to the login page
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => IntroScreen()),
+                      );
+                    },
+                    btnOkText: "Yes",
+                  )..show();
+                },
                 child: Icon(
                   Icons.logout,
                   color: Colors.red,
