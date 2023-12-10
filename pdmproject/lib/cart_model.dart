@@ -10,19 +10,15 @@ class CartModel extends ChangeNotifier {
     symbolSeparator: ' ',
   );
 
-  // list of items on sale
   final List _shopItems = const [
-    // [ itemName, itemPrice, imagePath, color ]
     ["Asus Tuf Gaming f15", 17999000, "assets/tuf.png", Colors.yellow],
     ["HP Victus 16", 22999000, "assets/Victus.jpeg", Colors.red],
     ["Macbook Pro M1", 16499000, "assets/macbook.jpeg", Colors.green],
     ["Lenovo Legion Pro 5i", 31879000, "assets/legion.jpeg", Colors.indigo],
   ];
 
-  // list of cart items
   List _cartItems = [];
 
-  // map to track purchased items and their counts
   Map<String, int> _purchasedItems = {};
 
   get cartItems => _cartItems;
@@ -31,25 +27,42 @@ class CartModel extends ChangeNotifier {
 
   get cartLength => _cartItems.length;
 
-  // add item to cart
-  void addItemToCart(String itemName, int stockLimit) {
-    int itemCountInCart = _cartItems.where((item) => item[0] == itemName).length;
-    
+  void addItemToCart(String itemName, int quantity) {
+    int itemCountInCart = _purchasedItems[itemName] ?? 0;
+
     // Check if the stock limit is reached
-    if (itemCountInCart < stockLimit) {
+    if (itemCountInCart + quantity <= 5) {
+      for (int i = 0; i < quantity; i++) {
+        _cartItems.add(List.from(_shopItems.firstWhere((item) => item[0] == itemName)));
+      }
+
+      _purchasedItems.update(itemName, (count) => count + quantity, ifAbsent: () => quantity);
+      notifyListeners();
+    }
+  }
+
+  void incrementItemQuantity(String itemName) {
+    int itemCount = _purchasedItems[itemName] ?? 0;
+    
+    // Check if incrementing is allowed (within the stock limit)
+    if (itemCount < 5) {
       _cartItems.add(List.from(_shopItems.firstWhere((item) => item[0] == itemName)));
       _purchasedItems.update(itemName, (count) => count + 1, ifAbsent: () => 1);
       notifyListeners();
     }
   }
 
-  // remove item from cart
   void removeItemFromCart(int index) {
+    String itemName = _cartItems[index][0];
     _cartItems.removeAt(index);
-    
+
+    int itemCountInCart = _purchasedItems[itemName] ?? 0;
+    if (itemCountInCart > 0) {
+      _purchasedItems.update(itemName, (count) => count - 1, ifAbsent: () => 0);
+    }
+
     notifyListeners();
   }
-
 
   void removeAllItemFromCart() {
     _cartItems.clear();
@@ -57,12 +70,25 @@ class CartModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // calculate total price
+  void removeAllItemByName(String itemName) {
+    int itemCountInCart = _purchasedItems[itemName] ?? 0;
+    _cartItems.removeWhere((item) => item[0] == itemName);
+    _purchasedItems.remove(itemName);
+
+    if (itemCountInCart > 1) {
+      _purchasedItems[itemName] = itemCountInCart - 1;
+    }
+
+    notifyListeners();
+  }
+
   String calculateTotal() {
     double totalPrice = 0;
-    for (int i = 0; i < cartItems.length; i++) {
-      totalPrice += double.parse(cartItems[i][1].toString());
+
+    for (int i = 0; i < _cartItems.length; i++) {
+      totalPrice += double.parse(_cartItems[i][1].toString());
     }
+
     return CurrencyFormatter.format(totalPrice, RupiahSettings).toString();
   }
 }

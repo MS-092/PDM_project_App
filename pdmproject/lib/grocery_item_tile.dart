@@ -6,7 +6,7 @@ class GroceryItemTile extends StatefulWidget {
   final String imagePath;
   final Color color;
   final int stockLimit;
-  final void Function()? onPressed;
+  final void Function(int)? onAddToCart;
 
   GroceryItemTile({
     Key? key,
@@ -15,7 +15,7 @@ class GroceryItemTile extends StatefulWidget {
     required this.imagePath,
     required this.color,
     required this.stockLimit,
-    this.onPressed,
+    this.onAddToCart,
   }) : super(key: key);
 
   @override
@@ -23,7 +23,14 @@ class GroceryItemTile extends StatefulWidget {
 }
 
 class _GroceryItemTileState extends State<GroceryItemTile> {
-  int purchasedCount = 0;
+  late TextEditingController quantityController;
+  int selectedQuantity = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    quantityController = TextEditingController(text: '1');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +41,8 @@ class _GroceryItemTileState extends State<GroceryItemTile> {
           borderRadius: BorderRadius.circular(12),
           color: widget.color,
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: ListView(
+          shrinkWrap: true,
           children: [
             // item image
             Padding(
@@ -62,23 +68,60 @@ class _GroceryItemTileState extends State<GroceryItemTile> {
               ),
             ),
 
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Quantity:'),
+                SizedBox(width: 10),
+                Container(
+                  width: 50,
+                  child: TextField(
+                    controller: quantityController,
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      int quantity = int.tryParse(value) ?? 0;
+                      setState(() {
+                        selectedQuantity = quantity;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+
             ElevatedButton(
               onPressed: () {
-                if (purchasedCount < widget.stockLimit) {
-                  // Update the state and notify the parent about the purchase
-                  setState(() {
-                    purchasedCount += 1;
-                  });
-                  // Call the onPressed function passed from the parent
-                  widget.onPressed?.call();
-                } else {
-                  // If the limit is reached, show a message (you can customize this part)
+                if (selectedQuantity > 0 && selectedQuantity <= widget.stockLimit) {
+                  widget.onAddToCart?.call(selectedQuantity);
+                  // Reset the quantity controller after adding to cart
+                  quantityController.text = '1';
+                } else if (selectedQuantity > widget.stockLimit) {
+                  // Show error message if quantity exceeds stock limit
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text('Purchase Limit Reached'),
-                        content: Text('You have reached the purchase limit for ${widget.itemName}.'),
+                        title: Text('Invalid Quantity'),
+                        content: Text('The selected quantity exceeds the stock limit (${widget.stockLimit}).'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } else {
+                  // Show error message if quantity is not valid
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Invalid Quantity'),
+                        content: Text('Please enter a valid quantity between 1 and ${widget.stockLimit}.'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () {
@@ -93,7 +136,7 @@ class _GroceryItemTileState extends State<GroceryItemTile> {
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: widget.color),
-              child: Text("Purchase"),
+              child: Text("Add to Cart"),
             ),
           ],
         ),

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pdmproject/login.dart';
 import 'package:pdmproject/mainpage.dart';
+import 'package:pdmproject/SignupPage.dart'; // Make sure to import the correct file
 
 class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //Every screen NEED this
       body: SafeArea(
-        //SafeArea
         child: Container(
           width: double.infinity,
           height: MediaQuery.of(context).size.height,
@@ -27,7 +26,7 @@ class IntroScreen extends StatelessWidget {
                     height: 20,
                   ),
                   Text(
-                    "Your only application to buy laptop is here",
+                    "Your only application to buy a laptop is here",
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey[700], fontSize: 20),
                   ),
@@ -45,48 +44,74 @@ class IntroScreen extends StatelessWidget {
                       backgroundColor: Colors.white,
                       elevation: 10,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                          side: BorderSide(color: Colors.black)),
+                        borderRadius: BorderRadius.circular(50),
+                        side: BorderSide(color: Colors.black),
+                      ),
                     ),
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => LoginPage()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignupPage()),
+                      );
+                    },
+                    child: Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 20),
+
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(double.infinity, 60),
+                      backgroundColor: Colors.white,
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        side: BorderSide(color: Colors.black),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
                     },
                     child: Text(
                       "Login",
                       style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18),
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size(double.infinity, 60),
-                      backgroundColor: Color.fromARGB(255, 112, 91, 222),
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                          side: BorderSide(color: Colors.black)),
-                    ),
-                    onPressed: () {
+
+                  SizedBox(height: 20),
+
+                  GestureDetector(
+                    onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  MainPage(username: "Guest")));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MainPage(username: "Guest"),
+                        ),
+                      );
                     },
                     child: Text(
                       "Continue as Guest",
                       style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18),
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
                     ),
-                  )
+                  ),
                 ],
               )
             ],

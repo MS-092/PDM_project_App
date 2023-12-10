@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pdmproject/mainpage.dart';
-// import 'package:login_signup_gdsc/animation/FadeAnimation.dart';
-// ... (previous imports)
 
-class LoginPage extends StatefulWidget {
+class SignupPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignupPageState createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
   final formGlobalKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -36,14 +34,14 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  "Login",
+                  "Sign Up",
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   height: 10,
                 ),
                 Text(
-                  "Login to your account",
+                  "Create a new account",
                   style: TextStyle(fontSize: 15, color: Colors.grey[700]),
                 ),
                 SizedBox(
@@ -116,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   child: Text(
-                    "Login",
+                    "Sign Up",
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
                   ),
                 ),

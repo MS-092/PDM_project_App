@@ -1,6 +1,6 @@
 import 'package:currency_formatter/currency_formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:pdmproject/cart_model.dart'; // Import the CartModel
+import 'package:pdmproject/cart_model.dart';
 import 'package:pdmproject/grocery_item_tile.dart';
 import 'package:provider/provider.dart';
 
@@ -23,8 +23,8 @@ class Market extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //Header
-           Padding(
+          // Header
+          Padding(
             padding: EdgeInsets.only(left: 24.0, right: 24.0, top: 10.0),
             child: Text(
               'Welcome, $username',
@@ -53,19 +53,21 @@ class Market extends StatelessWidget {
                   itemCount: cartModel.shopItems.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 1 / 1.2,
+                    childAspectRatio: 2.5 /3.1,
                   ),
                   itemBuilder: (context, index) {
                     return GroceryItemTile(
                       itemName: cartModel.shopItems[index][0],
                       itemPrice: CurrencyFormatter.format(
-                          cartModel.shopItems[index][1], RupiahSettings),
+                        cartModel.shopItems[index][1],
+                        RupiahSettings,
+                      ),
                       imagePath: cartModel.shopItems[index][2],
                       color: cartModel.shopItems[index][3],
                       stockLimit: 5, // Set the stock limit for each item
-                      onPressed: () => cartModel.addItemToCart(
+                      onAddToCart: (quantity) => cartModel.addItemToCart(
                         cartModel.shopItems[index][0],
-                        5, // Set the stock limit for each item
+                        quantity,
                       ),
                     );
                   },

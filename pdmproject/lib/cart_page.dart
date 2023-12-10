@@ -20,10 +20,18 @@ class CartPage extends StatelessWidget {
     return Scaffold(
       body: Consumer<CartModel>(
         builder: (context, value, child) {
+          Map<String, int> itemQuantities = {};
+
+          for (var item in value.cartItems) {
+            String itemName = item[0];
+            itemQuantities[itemName] = itemQuantities.containsKey(itemName)
+                ? itemQuantities[itemName]! + 1
+                : 1;
+          }
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Let's order the laptops
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
                 child: Column(
@@ -37,15 +45,22 @@ class CartPage extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // list view of cart
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: ListView.builder(
-                    itemCount: value.cartLength,
+                    itemCount: itemQuantities.length,
                     padding: const EdgeInsets.all(12),
                     itemBuilder: (context, index) {
+                      String itemName = itemQuantities.keys.elementAt(index);
+                      int quantity = itemQuantities[itemName]!;
+                      var itemDetails = value.cartItems
+                          .firstWhere((item) => item[0] == itemName);
+
+                      // Shorten the itemName display if it has more than 7 characters for the orginal itemName
+                      String displayedName =
+                          itemName.length > 7 ? itemName.substring(0, 7) + ".." : itemName;
+
                       return Padding(
                         padding: const EdgeInsets.all(12.0),
                         child: Container(
@@ -53,28 +68,71 @@ class CartPage extends StatelessWidget {
                             color: Colors.grey[300],
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: ListTile(
-                            leading: Image.asset(
-                              value.cartItems[index][2],
-                              height: 36,
-                            ),
-                            title: Text(
-                              value.cartItems[index][0],
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                            subtitle: Text(
-                              CurrencyFormatter.format(
-                                value.cartItems[index][1],
-                                RupiahSettings,
-                              ).toString(),
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.cancel),
-                              onPressed: () =>
-                                  Provider.of<CartModel>(context, listen: false)
-                                      .removeItemFromCart(index),
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Image.asset(
+                                      itemDetails[2],
+                                      height: 36,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          displayedName,
+                                          style: const TextStyle(fontSize: 18),
+                                        ),
+                                        Text(
+                                          CurrencyFormatter.format(itemDetails[1], RupiahSettings).toString(),
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.remove),
+                                    onPressed: () {
+                                      if (quantity > 1) {
+                                        Provider.of<CartModel>(context, listen: false)
+                                            .removeItemFromCart(index);
+                                      }
+                                      else if (quantity <= 0) {
+                                        Provider.of<CartModel>(context, listen: false)
+                                          .removeAllItemByName(itemName);
+                                      }
+                                    },
+                                  ),
+                                  Text(
+                                    '$quantity',
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.add),
+                                    onPressed: () {
+                                    // Assuming you have access to the itemName, call the method to increment quantity
+                                    Provider.of<CartModel>(context, listen: false)
+                                    .incrementItemQuantity(itemName);
+                                  },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () {
+                                      Provider.of<CartModel>(context, listen: false)
+                                          .removeAllItemByName(itemName);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -82,8 +140,6 @@ class CartPage extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // total amount + pay now
               Padding(
                 padding: const EdgeInsets.all(36.0),
                 child: Container(
@@ -103,7 +159,6 @@ class CartPage extends StatelessWidget {
                             style: TextStyle(color: Colors.green[200]),
                           ),
                           const SizedBox(height: 4),
-                          // total price
                           Text(
                             value.calculateTotal(),
                             style: const TextStyle(
@@ -114,7 +169,6 @@ class CartPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      // pay now
                       ElevatedButton(
                         onPressed: () {
                           if (value.cartLength > 0) {
