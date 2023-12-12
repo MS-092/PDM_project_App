@@ -69,7 +69,7 @@ class IntroScreen extends StatelessWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(double.infinity, 60),
-                      backgroundColor: Colors.white,
+                      backgroundColor: Colors.purple,
                       elevation: 10,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
@@ -85,7 +85,7 @@ class IntroScreen extends StatelessWidget {
                     child: Text(
                       "Login",
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontWeight: FontWeight.w600,
                         fontSize: 18,
                       ),
